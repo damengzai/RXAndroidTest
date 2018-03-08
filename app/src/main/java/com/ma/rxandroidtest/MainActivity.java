@@ -4,7 +4,10 @@ import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.ImageView;
+
+import com.jakewharton.rxbinding2.view.RxView;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -18,6 +21,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    private Button b;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +30,28 @@ public class MainActivity extends AppCompatActivity {
         imageView = findViewById(R.id.main_iv);
         printStr();
         addImage();
+        RxView.clicks(imageView)
+                .subscribe(new Observer<Object>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+                        Log.d(TAG, "onNext: click--------");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     //循环输出字符串
