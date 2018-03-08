@@ -9,6 +9,8 @@ import android.widget.ImageView;
 
 import com.jakewharton.rxbinding2.view.RxView;
 
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         printStr();
         addImage();
         RxView.clicks(imageView)
+                .throttleFirst(300, TimeUnit.MILLISECONDS)
                 .subscribe(new Observer<Object>() {
                     @Override
                     public void onSubscribe(Disposable d) {
