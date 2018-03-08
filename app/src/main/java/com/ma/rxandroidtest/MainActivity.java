@@ -10,8 +10,11 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -27,26 +30,37 @@ public class MainActivity extends AppCompatActivity {
 
     //循环输出字符串
     private String[] names = {"name1", "name2", "name3"};
-    private void printStr(){
-        Observable.fromArray(names).subscribe(new Observer<String>() {
+
+    private void printStr() {
+        Observable.fromArray(names)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        Log.d(TAG, "onNext: s:" + s);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+        Observable.fromArray(names).subscribe(new Consumer<String>() {
             @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-
-            @Override
-            public void onNext(String s) {
-                Log.d(TAG, "onNext: s:"+s);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
+            public void accept(String s) throws Exception {
+                Log.d(TAG, "accept: sss:"+s);
             }
         });
     }
@@ -54,7 +68,8 @@ public class MainActivity extends AppCompatActivity {
     //添加图片
     private int drawableRes = R.mipmap.ic_launcher;
     private ImageView imageView;
-    private void addImage(){
+
+    private void addImage() {
         Observable.create(new ObservableOnSubscribe<Drawable>() {
             @Override
             public void subscribe(ObservableEmitter<Drawable> emitter) throws Exception {
@@ -62,26 +77,29 @@ public class MainActivity extends AppCompatActivity {
                 emitter.onNext(drawable);
                 emitter.onComplete();
             }
-        }).subscribe(new Observer<Drawable>() {
-            @Override
-            public void onSubscribe(Disposable d) {
+        })
+                .subscribeOn(Schedulers.io())                   //事件产生线程
+                .observeOn(AndroidSchedulers.mainThread())      //事件消费线程
+                .subscribe(new Observer<Drawable>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
 
-            }
+                    }
 
-            @Override
-            public void onNext(Drawable drawable) {
-                imageView.setImageDrawable(drawable);
-            }
+                    @Override
+                    public void onNext(Drawable drawable) {
+                        imageView.setImageDrawable(drawable);
+                    }
 
-            @Override
-            public void onError(Throwable e) {
+                    @Override
+                    public void onError(Throwable e) {
 
-            }
+                    }
 
-            @Override
-            public void onComplete() {
+                    @Override
+                    public void onComplete() {
 
-            }
-        });
+                    }
+                });
     }
 }
